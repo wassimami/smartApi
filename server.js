@@ -9,11 +9,8 @@ import Clarifai from 'clarifai'
 const pgdb =knex({
   client: 'pg',
   connection: {
-    host: 'postgresql-fitted-29775',
-    port: 5432,
-    user: 'postgres',
-    password: '164219',
-    database: 'smartb',
+    host: process.env.DATABASE_URL,
+    ssl: true
   },
 });
 
