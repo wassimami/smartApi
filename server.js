@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt-nodejs';
 import cors from 'cors';
 import knex from 'knex';
 import fetch from 'node-fetch';
+import 'dotenv/config'
 
 
 
@@ -44,11 +45,13 @@ const requestOptions = {
   },
   body: raw
 };
+
 return requestOptions;
 
 }
 
 
+const PORT = process.env.PORT || 3001;
 const pgdb =knex({
   client: 'pg',
   connection: {
@@ -155,16 +158,28 @@ app.put('/image', (req,res)=>{
 	.catch(err => res.status(400).json('unable to get count'))
 })
 
-app.post('/imageu' ,(req,res)=>{
-	console.log(req.body.input);
-	fetch("https://api.clarifai.com/v2/models/face-detection/outputs", setupClarifai(req.body.input))
-    .then(data => {
-    	return res.json(data);
-  })
-    .catch(err => res.status(400).json('unable for api'))
-})
+
+app.post('/faced', async (req, res) => {
+    const imageURL = req.body.input;
+    
+    // Check if the URL is empty
+    if (!imageURL) {
+        return res.status(400).json('URL is empty. Please provide a valid image URL.');
+    }
+
+    try {
+        const response = await fetch("https://api.clarifai.com/v2/models/face-detection/outputs", setupClarifai(imageURL));
+        console.log("status", response.status);
+        const data = await response.json();
+        console.log("data", data);
+        return res.json(data);
+    } catch (err) {
+        return res.status(400).json('Unable to reach API');
+    }
+});
 
 
-app.listen(process.env.PORT || 3001, ()=>{
-	console.log(`running on port ${process.env.PORT}`)
+
+app.listen(PORT , ()=>{
+	console.log(`running on port ${PORT}`)
 })
