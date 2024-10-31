@@ -159,7 +159,7 @@ app.post('/imageu' ,(req,res)=>{
 	console.log(req.body.input);
 	fetch("https://api.clarifai.com/v2/models/face-detection/outputs", setupClarifai(req.body.input))
     .then(data => {
-    	res.json(data);
+    	return res.json(data);
   })
     .catch(err => res.status(400).json('unable for api'))
 })
